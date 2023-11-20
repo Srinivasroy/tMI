@@ -1,0 +1,20 @@
+[HttpGet()]
+        [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<object>ValidationPhoneNumber(string countryCode,string mobileNumber)
+        {
+            var Code = "+" + countryCode;
+            var num = await _context.CountryMasters.Where(c => c.countryCode == Code).FirstOrDefaultAsync();
+            bool isValid;
+            if (num.countryCode == Code)
+            {
+                int a = (int)num.numberlength;
+                isValid = Regex.IsMatch(mobileNumber, $"^[0-9]{{{a}}}$");
+                if (isValid == true)
+                {
+                    return new { message = "Valid Number" };
+                }
+               
+            }
+
+            return Conflict(new { message = "Invalid Number" }); 
+        }
